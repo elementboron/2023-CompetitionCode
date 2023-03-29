@@ -11,6 +11,7 @@ import frc.robot.autos.RealRightPlaceGrabClimb;
 import frc.robot.autos.TemporaryPlaceAuto;
 import frc.robot.autos.ClimbingTest;
 import frc.robot.autos.RealLeftPlaceClimb;
+import frc.robot.autos.RealLeftPlaceGrab;
 //import frc.robot.autos.ParallelCommandTesting;
 //import frc.robot.autos.PathPlanningAuto;
 import frc.robot.autos.RealPlaceClimbMiddleAuto;
@@ -42,14 +43,14 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton slowDown = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton rotateTo180 = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton armToLow = new JoystickButton(driver, XboxController.Button.kA.value);
 
     private final JoystickButton wristToLow = new JoystickButton(driver2, XboxController.Button.kLeftBumper.value);
     private final JoystickButton armToHigh = new JoystickButton(driver2, XboxController.Button.kY.value);
     private final JoystickButton wristToHome = new JoystickButton(driver2, XboxController.Button.kRightBumper.value);
     private final JoystickButton armToHome = new JoystickButton(driver2, XboxController.Button.kB.value);
     private final JoystickButton wristToHigh = new JoystickButton(driver2, XboxController.Button.kA.value); 
-    private final JoystickButton triggerPneumatics = new JoystickButton(driver2, XboxController.Button.kX.value);
+    private final JoystickButton cancelCommand = new JoystickButton(driver2, XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -62,7 +63,7 @@ public class RobotContainer {
     // Driving Control //
     public static final double desiredSpeed = 1;
     public static double speedController = desiredSpeed;
-    public static double turnController = speedController*0.6;
+    public static double turnController = speedController*0.5;
 
 
 
@@ -123,7 +124,9 @@ public class RobotContainer {
         wristToHome.onTrue(new WristToHome(s_Wrist));
         wristToLow.onTrue(new WristToDown(s_Wrist));
         wristToHigh.onTrue(new WristToHigh(s_Wrist));
-        triggerPneumatics.onTrue(new TogglePneumatics(s_Wrist));
+        cancelCommand.onTrue(new StopWrist(s_Wrist));
+        cancelCommand.onTrue(new ArmStop(s_Arm));
+        armToLow.onTrue(new ArmToLow(s_Arm));
     }
 
     /**
@@ -132,13 +135,12 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
+    
+        //final Command auto = new RealLeftPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         //final Command auto = new RealRightPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        //final Command auto = new RealRightPlaceGrabClimb(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        //final Command auto = new RealRightPlaceClimb(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         final Command auto = new RealPlaceClimbMiddleAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels);
+
         //final Command auto = new TemporaryPlaceAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        //final Command auto = new RealLeftPlaceClimb(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         //final Command auto = new ClimbingTest(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         return auto;
     }

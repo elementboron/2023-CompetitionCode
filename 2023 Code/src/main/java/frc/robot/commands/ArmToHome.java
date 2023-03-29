@@ -41,7 +41,7 @@ public class ArmToHome extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        if(s_Arm.ShoulderPosition()>-20)
+        if(s_Arm.ShoulderPosition()>-6.5*2048)
         {
             return true;
         } else

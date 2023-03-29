@@ -43,10 +43,10 @@ import frc.robot.subsystems.RotateArmMotor;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.WristMotor;
 
-public class RealRightPlaceGrab extends SequentialCommandGroup {
+public class RealLeftPlaceGrab extends SequentialCommandGroup {
 
     
-    public RealRightPlaceGrab(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels){
+    public RealLeftPlaceGrab(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels){
 
         TrajectoryConfig config =
             new TrajectoryConfig(
@@ -72,7 +72,7 @@ public class RealRightPlaceGrab extends SequentialCommandGroup {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(3, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.5, 0.4, new Rotation2d(0)),
+                new Pose2d(4.5, -0.4, new Rotation2d(0)),
                 config);
 
         Trajectory pickUpCone =

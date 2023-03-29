@@ -29,6 +29,7 @@ import frc.robot.Robot;
 
 public class Limelight extends SubsystemBase 
 {
+
   public static Limelight Instance;
 
   public static Limelight Instance(){
@@ -38,12 +39,19 @@ public class Limelight extends SubsystemBase
     return Instance;
 }
   
+  public void InitLimelight()
+  {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setDouble(1);
+  }
+
   public void UpdateSmartDashboardNums()
   {
+    
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
+
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);

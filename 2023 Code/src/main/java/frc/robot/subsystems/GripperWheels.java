@@ -49,7 +49,7 @@ public class GripperWheels extends SubsystemBase
 
   public void SuckIn()
   {
-    wheelMotor.set(1);
+    wheelMotor.set(0.6);
   }
 
   public void SpitOut()

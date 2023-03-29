@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.AxisCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -72,7 +74,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
+    
+    Limelight.Instance().InitLimelight();
+    CameraServer.startAutomaticCapture();
     s_Arm.ShoulderSoftLimits();
     s_Wrist.SetWristSoftLimits();
     ctreConfigs = new CTREConfigs();

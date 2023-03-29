@@ -38,7 +38,7 @@ public class RotateArmMotor extends SubsystemBase
   public void ShoulderSoftLimits()
   {
     motorRotate.configForwardSoftLimitEnable(true);
-    motorRotate.configForwardSoftLimitThreshold(0);
+    motorRotate.configForwardSoftLimitThreshold(-6*2048);
     motorRotate.configReverseSoftLimitEnable(true);
     motorRotate.configReverseSoftLimitThreshold(-110*2048);
   }
@@ -52,6 +52,18 @@ public class RotateArmMotor extends SubsystemBase
     } else if (motorRotate.getSelectedSensorPosition()<targetPosition)
     {
       motorRotate.set((-speed*((4*(Math.abs((motorRotate.getSelectedSensorPosition()-targetPosition))/targetPosition)))+0.1));
+    }
+  }
+
+  public void ToPosition(double desiredPosition, double speed)
+  {
+    double targetPosition = desiredPosition * 2048;
+    if(motorRotate.getSelectedSensorPosition() > targetPosition)
+    {
+      motorRotate.set(-speed);
+    } else if (motorRotate.getSelectedSensorPosition() < targetPosition)
+    {
+      motorRotate.set(speed);
     }
   }
 

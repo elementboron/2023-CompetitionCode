@@ -115,7 +115,7 @@ public class Swerve extends SubsystemBase {
 
     public void OneEightyGyro()
     {
-        gyro.setYaw(180);
+        gyro.setYaw(179.9);
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {

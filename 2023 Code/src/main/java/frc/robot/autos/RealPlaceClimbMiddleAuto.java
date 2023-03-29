@@ -84,12 +84,9 @@ public class RealPlaceClimbMiddleAuto extends SequentialCommandGroup {
             new InstantCommand((() -> s_Swerve.zeroGyro())),
             
             //PLACE INITIAL CUBE
-            new ArmToLow(s_Arm),
-            new ParallelRaceGroup(
-                new WristToHigh(s_Wrist),
-                new ArmToHigh(s_Arm)
-            ),
+            new ArmToHigh(s_Arm),
             new ArmStop(s_Arm),
+            new WristToHigh(s_Wrist),
             new StopWrist(s_Wrist),
             new WaitCommand(0.2),
             new WheelsSuckIn(s_Wheels),
@@ -103,8 +100,6 @@ public class RealPlaceClimbMiddleAuto extends SequentialCommandGroup {
                 new ArmToHome(s_Arm),
                 new WristToHome(s_Wrist)
             ),
-            new ArmStop(s_Arm),
-            new StopWrist(s_Wrist),
             new ArmStop(s_Arm),
             new StopWrist(s_Wrist),
             new InstantCommand((() -> s_Swerve.zeroGyro())),
