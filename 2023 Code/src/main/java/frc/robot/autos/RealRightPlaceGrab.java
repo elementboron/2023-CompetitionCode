@@ -106,11 +106,6 @@ public class RealRightPlaceGrab extends SequentialCommandGroup {
                 config.setReversed(true));
         
         
-        
-
-        
-
-
         SwerveControllerCommand DriveToCone =
             new SwerveControllerCommand(
                 driveToCone,

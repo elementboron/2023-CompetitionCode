@@ -35,7 +35,7 @@ public class ArmToHome extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Arm.ArmToZero();
+        s_Arm.ToHome();
     }
 
     @Override

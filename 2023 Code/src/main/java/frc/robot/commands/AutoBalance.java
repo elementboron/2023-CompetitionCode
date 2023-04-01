@@ -27,9 +27,9 @@ public class AutoBalance extends CommandBase
 
     @Override
     public void initialize()
-    {
-        
+    { 
     }
+    
     @Override
     public void execute() 
     {  

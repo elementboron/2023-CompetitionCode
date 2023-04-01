@@ -28,21 +28,18 @@ import frc.robot.Robot;
 public class RotateArmMotor extends SubsystemBase 
 {
 
+  /* Motors/Encoders */
   public WPI_TalonFX motorRotate = new WPI_TalonFX(Constants.Swerve.rotateArmID);
+
  
+  /* Default Teleop Command (driven directly by joystick) */
   public void TeleOp(DoubleSupplier armRotation) 
   {
       motorRotate.set(armRotation.getAsDouble());
   }
 
-  public void ShoulderSoftLimits()
-  {
-    motorRotate.configForwardSoftLimitEnable(true);
-    motorRotate.configForwardSoftLimitThreshold(-6*2048);
-    motorRotate.configReverseSoftLimitEnable(true);
-    motorRotate.configReverseSoftLimitThreshold(-110*2048);
-  }
 
+  /* Custom PID Program for Set Position (called by a button press) */
   public void SetPosition(double desiredPosition, double speed)
   {
     double targetPosition = desiredPosition * 2048;
@@ -55,6 +52,8 @@ public class RotateArmMotor extends SubsystemBase
     }
   }
 
+
+  /* Basic Set Position Command (called by a button press) */
   public void ToPosition(double desiredPosition, double speed)
   {
     double targetPosition = desiredPosition * 2048;
@@ -67,7 +66,9 @@ public class RotateArmMotor extends SubsystemBase
     }
   }
 
-  public void ArmToZero()
+
+  /* Brings the Arm To Home */
+  public void ToHome()
   {
     if(motorRotate.getSelectedSensorPosition()<0)
     {
@@ -75,25 +76,39 @@ public class RotateArmMotor extends SubsystemBase
     } 
   }
 
+
+  /* Sets Forward and Reverse Soft Limits for the Shoulder */
+  public void ShoulderSoftLimits()
+  {
+    motorRotate.configForwardSoftLimitEnable(true);
+    motorRotate.configForwardSoftLimitThreshold(-6*2048);
+    motorRotate.configReverseSoftLimitEnable(true);
+    motorRotate.configReverseSoftLimitThreshold(-110*2048);
+  }
+
+
+  /* Returns the Current Shoulder Position */
   public double ShoulderPosition()
   {
     return motorRotate.getSelectedSensorPosition();
   }
 
+
+  /* Periodically Posts Arm Values to SmartDashboard */
   public void UpdateSmartDashNums()
   {
-
     SmartDashboard.putNumber("RotateMotor Temperature:", motorRotate.getTemperature());
     SmartDashboard.putNumber("RotateMotor Current:", motorRotate.getSupplyCurrent());
     SmartDashboard.putNumber("RotateMotor Rotations:",motorRotate.getSelectedSensorPosition()/2048);
-
   }
   
 
+  /* Stops the Shoulder */
   public void Stop()
   {
     motorRotate.set(0);
   }
+
 
   public boolean isFinished() 
   {

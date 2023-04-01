@@ -43,31 +43,27 @@ import frc.robot.subsystems.WristMotor;
  * project.
  */
 public class Robot extends TimedRobot {
+  
   public static CTREConfigs ctreConfigs;
 
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
 
+
+  /* Subsystems */
   private final RotateArmMotor s_Arm = new RotateArmMotor();
   private final WristMotor s_Wrist = new WristMotor();
   private final Swerve s_Swerve = new Swerve();
   private final Limelight s_Limelight = new Limelight();
 
   
-  //private final Pneumatics s_Pneumatics = new Pneumatics();
-  //public final Solenoid gripper = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.Swerve.gripperSolenoidID);
-
-  //CANSparkMax motor = new CANSparkMax(9, MotorType.kBrushless);
-  //CANSparkMax motor2 = new CANSparkMax(7, MotorType.kBrushless);
-
-
-  public boolean toggle = false;
-  boolean lastFramespinOutValue = false;
-  
+  /* Global Motors/Solenoids */
   public static Solenoid wristSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
   public static CANSparkMax wristMotor = new CANSparkMax(Constants.Swerve.wristRotationID, MotorType.kBrushless);
   public static CANSparkMax wheelsMotor = new CANSparkMax(Constants.Swerve.wheelsMotorID, MotorType.kBrushless);
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -75,21 +71,28 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     
+    //Instantiate the Limelight
     Limelight.Instance().InitLimelight();
+
+    //Start the camera server on SmartDashboard for viewing
     CameraServer.startAutomaticCapture();
+
+    //Set the soft limits for the shoulder and wrist
     s_Arm.ShoulderSoftLimits();
     s_Wrist.SetWristSoftLimits();
-    ctreConfigs = new CTREConfigs();
-    //s_Arm.Initialize(new WPI_TalonFX(18));
 
+    //Instantiate the configs and the RobotContainer
+    ctreConfigs = new CTREConfigs();
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
 
+    //Constantly post limelight values to SmartDashboard for viewing
     Limelight.Instance().UpdateSmartDashboardNums();
 
+    //Constantly post arm and wrist positions to SmartDashboard for viewing
     s_Arm.UpdateSmartDashNums();
     s_Wrist.UpdateSmartDashNums();
     
@@ -132,30 +135,12 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    //motor2.set((m_stick.getRawAxis(wristRotationAxisPositive)-m_stick.getRawAxis(wristRotationAxisNegative))/1.5);
-    //motor.set(m_stick.getRawAxis(wheelRotationAxis));
-
-  
-/*
-    boolean pressedThisFrame = spinOutButton.getAsBoolean();
-
-    if(lastFramespinOutValue != pressedThisFrame && pressedThisFrame)
-    {
-      toggle = !toggle;
-    }
-    lastFramespinOutValue = pressedThisFrame;
-
-   if(toggle)
-    {
-      s_Arm.SpinIn(new WPI_TalonFX(18), 0.2, 10, true);
-    }
-    else
-    {
-      s_Arm.SpinOut(new WPI_TalonFX(18), 0.2, 10, true);
-    }
-  **/
-
+  public void teleopPeriodic() 
+  {
+    /*
+    Instead of putting commands here, they should be ran through RobotContainer, 
+    either as a DefaultCommand or a secondary command in ConfigureButtonBindings().
+    */
   }
 
   @Override

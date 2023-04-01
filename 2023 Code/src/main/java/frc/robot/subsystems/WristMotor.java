@@ -31,16 +31,20 @@ import frc.robot.Robot;
 public class WristMotor extends SubsystemBase 
 {
   
+  /* Motors/Encoders */
   CANSparkMax wristMotor = Robot.wristMotor;
   RelativeEncoder encoder = wristMotor.getEncoder();
   Solenoid solenoid = Robot.wristSolenoid;
   
  
+  /* Default Teleop Command (driven directly by joysticks) */
   public void TeleOpWrist(DoubleSupplier wristRotation) 
   {
     wristMotor.set(wristRotation.getAsDouble());
   }
 
+
+  /* Set Position Command (called by a button press) */
   public void ToPosition(double desiredPosition, double speed)
   {
     if(encoder.getPosition()<desiredPosition)
@@ -52,23 +56,31 @@ public class WristMotor extends SubsystemBase
     }
   }
 
+
+  /* Brings the Wrist To Home */
   public void ToHome()
   {
     if(encoder.getPosition()>0)
     {
-      wristMotor.set(-0.4);
+      wristMotor.set(-1);
     }
   }
 
+
+  /* Returns the Current Wrist Position */
   public double WristPosition(){
     return encoder.getPosition();
   }
 
+
+  /* Toggles Pneumatics */
   public void Shift()
   {
     solenoid.toggle();
   }
 
+
+  /* Sets Forward and Reverse Soft Limits for the Wrist */
   public void SetWristSoftLimits()
   {
     encoder.setPosition(0);
@@ -80,17 +92,19 @@ public class WristMotor extends SubsystemBase
   }
 
 
+  /* Periodically Posts Wrist Position to SmartDashboard */
   public void UpdateSmartDashNums()
   {
-
     SmartDashboard.putNumber("WristMotor Position:", encoder.getPosition());
   }
   
 
+  /* Stops the Wrist Motor */
   public void Stop()
   {
     wristMotor.set(0);
   }
+
 
   public boolean isFinished() 
   {

@@ -71,6 +71,7 @@ public class RealRightPlaceGrabClimb extends SequentialCommandGroup {
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(4.75, 0.3, new Rotation2d(0)),
                 config);
+
         Trajectory alignWithChargingStation =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
@@ -91,11 +92,6 @@ public class RealRightPlaceGrabClimb extends SequentialCommandGroup {
                 new Pose2d(-2, 0, new Rotation2d(0)),
                 config.setReversed(true));
         
-        
-        
-
-        
-
 
         SwerveControllerCommand DriveToCone =
             new SwerveControllerCommand(

@@ -29,7 +29,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    private final Joystick driver2 = new Joystick(1);
+    private final Joystick operator = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -45,23 +45,22 @@ public class RobotContainer {
     private final JoystickButton slowDown = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton armToLow = new JoystickButton(driver, XboxController.Button.kA.value);
 
-    private final JoystickButton wristToLow = new JoystickButton(driver2, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton armToHigh = new JoystickButton(driver2, XboxController.Button.kY.value);
-    private final JoystickButton wristToHome = new JoystickButton(driver2, XboxController.Button.kRightBumper.value);
-    private final JoystickButton armToHome = new JoystickButton(driver2, XboxController.Button.kB.value);
-    private final JoystickButton wristToHigh = new JoystickButton(driver2, XboxController.Button.kA.value); 
-    private final JoystickButton cancelCommand = new JoystickButton(driver2, XboxController.Button.kX.value);
+    /* Operator Buttons */
+    private final JoystickButton wristToLow = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton armToHigh = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton wristToHome = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
+    private final JoystickButton armToHome = new JoystickButton(operator, XboxController.Button.kB.value);
+    private final JoystickButton wristToHigh = new JoystickButton(operator, XboxController.Button.kA.value); 
+    private final JoystickButton cancelCommand = new JoystickButton(operator, XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final RotateArmMotor s_Arm = new RotateArmMotor();
     private final WristMotor s_Wrist = new WristMotor();
     private final GripperWheels s_Wheels = new GripperWheels();
-    //private final Pneumatics s_Pneumatics = new Pneumatics();
-    //private final GripperWheelsSubsystem s_Wheels = new GripperWheelsSubsystem();
 
-    // Driving Control //
-    public static final double desiredSpeed = 1;
+    /* Driving Speed Control */
+    public static final double desiredSpeed = 0.9;
     public static double speedController = desiredSpeed;
     public static double turnController = speedController*0.5;
 
@@ -69,6 +68,9 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        //Setting the default commands makes a certain command, such as joystick input, the primary driver of each subsystem. 
+        //This makes any other command that requires the same subsystem, such as the ones in ConfigureButtonBindings(), interrupt the default command until it is finished.
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -83,7 +85,7 @@ public class RobotContainer {
         s_Arm.setDefaultCommand(      
             new TeleopArm(
                 s_Arm,
-                () -> driver2.getRawAxis(translationAxis)*0.8
+                () -> operator.getRawAxis(translationAxis)*0.8
 
             )
         );
@@ -91,15 +93,15 @@ public class RobotContainer {
         s_Wrist.setDefaultCommand(
             new TeleopWrist(
                 s_Wrist,
-                () -> driver2.getRawAxis(wristRotationAxis)
+                () -> operator.getRawAxis(wristRotationAxis)
             )
         );
 
         s_Wheels.setDefaultCommand(
             new TeleopWheels(
                 s_Wheels,
-                () -> driver2.getRawAxis(extendAxis),
-                () -> driver2.getRawAxis(retractAxis)
+                () -> operator.getRawAxis(extendAxis),
+                () -> operator.getRawAxis(retractAxis)
             )
         );
 
@@ -119,14 +121,16 @@ public class RobotContainer {
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         slowDown.onTrue(new SlowDown(s_Swerve));
         slowDown.onFalse(new RegularSpeed(s_Swerve));
-        armToHome.onTrue(new ArmToHome(s_Arm));
-        armToHigh.onTrue(new ArmToHigh(s_Arm));
+
+        //armToHome.onTrue(new ArmToHome(s_Arm));
+        //armToHigh.onTrue(new ArmToHigh(s_Arm));
+        //armToLow.onTrue(new ArmToLow(s_Arm));
+
         wristToHome.onTrue(new WristToHome(s_Wrist));
         wristToLow.onTrue(new WristToDown(s_Wrist));
         wristToHigh.onTrue(new WristToHigh(s_Wrist));
         cancelCommand.onTrue(new StopWrist(s_Wrist));
         cancelCommand.onTrue(new ArmStop(s_Arm));
-        armToLow.onTrue(new ArmToLow(s_Arm));
     }
 
     /**

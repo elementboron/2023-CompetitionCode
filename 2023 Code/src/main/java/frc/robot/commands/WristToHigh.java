@@ -36,7 +36,7 @@ public class WristToHigh extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(115, 0.6);
+        s_Wrist.ToPosition(115, 1);
     }
 
     @Override
