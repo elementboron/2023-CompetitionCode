@@ -17,6 +17,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,8 +25,10 @@ import frc.robot.Constants;
 import frc.robot.commands.ArmStop;
 import frc.robot.commands.ArmToHigh;
 import frc.robot.commands.ArmToHome;
+import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.FollowTrajectory;
+import frc.robot.commands.PrintLineCommand;
 import frc.robot.commands.RotateAuto;
 import frc.robot.commands.StopRobotAutonomous;
 import frc.robot.commands.StopWrist;
@@ -100,14 +103,17 @@ public class ParallelCommandTesting extends SequentialCommandGroup {
         addCommands(
             new InstantCommand((() -> s_Swerve.zeroGyro())),
             new InstantCommand((() -> s_Swerve.resetOdometry(traj.getInitialPose()))),
+            new ArmToLow(s_Arm),
                 new ParallelCommandGroup(
                     new ArmToHigh(s_Arm),
                     new WristToHigh(s_Wrist)
                 ),
-            new ArmStop(s_Arm),
-            new StopWrist(s_Wrist)
-
-
+            new PrintLineCommand(s_Arm, "Wait Command"),
+            new WaitCommand(0.5),
+            new PrintLineCommand(s_Arm, "Wheels Spit Out"),
+            new WheelsSpitOut(s_Wheels),
+            new WaitCommand(0.3),
+            new WheelsStop(s_Wheels)
         );
 
     }

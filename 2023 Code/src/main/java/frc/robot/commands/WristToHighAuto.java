@@ -29,14 +29,18 @@ public class WristToHighAuto extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
         s_Wrist.ToPosition(115, 0.3);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Wrist.Stop();
     }
 
     @Override

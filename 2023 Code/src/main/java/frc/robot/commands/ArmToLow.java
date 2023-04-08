@@ -29,14 +29,18 @@ public class ArmToLow extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
         s_Arm.ToPosition(-12, 0.6);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Arm.Stop();
     }
 
     @Override

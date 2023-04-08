@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CommonMethodExtensions;
@@ -26,36 +27,61 @@ import frc.robot.Robot;
 
 public class GripperWheels extends SubsystemBase 
 {
-  //public final CANSparkMax motor1 = new CANSparkMax(11, MotorType.kBrushless);
-  //public final WPI_TalonFX m_indexend = new WPI_TalonFX(8);
-  //WPI_TalonFX motorExtend = new WPI_TalonFX(Constants.Swerve.extendMotorID);
+
+  /* Motors/Encoders/Pneumatics */
   CANSparkMax wheelMotor = Robot.wheelsMotor;
   RelativeEncoder encoder = wheelMotor.getEncoder();
+  Solenoid solenoid = Robot.wristSolenoid;
+  
 
-  /*public void Initialize(WPI_TalonFX motor)  {
-    this.motor = motor;
-  }**/
-
-
+  /* Default Command for Teleop (driven directly as the difference of the right and left trigger) */
   public void Drive(DoubleSupplier positiveRotation, DoubleSupplier negativeRotation)
   {
     wheelMotor.set((positiveRotation.getAsDouble()-negativeRotation.getAsDouble()));
   }
 
+
+  /* Toggles the Pneumatics */
+  public void Shift()
+  {
+    solenoid.toggle();
+  }
+
+
+  /* Turn On Pneumatics */
+  public void ActivatePneumatics()
+  {
+    solenoid.set(true);
+  }
+
+
+  /* Turn Off Pneumatics */
+  public void DeactivatePneumatics()
+  {
+    solenoid.set(false);
+  }
+  
+
+  /* Stops the Intake */
   public void Stop()
   {
     wheelMotor.set(0);
   }
 
+
+  /* Sets the Intake To Suck In Cones (auto use only) */
   public void SuckIn()
   {
     wheelMotor.set(0.6);
   }
 
+
+  /* Sets the Intake To Spit Out Cones (auto use only) */
   public void SpitOut()
   {
     wheelMotor.set(-1);
   }
+
 
   public boolean isFinished() 
   {

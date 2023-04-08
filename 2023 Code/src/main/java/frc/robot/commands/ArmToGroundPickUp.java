@@ -15,38 +15,38 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class WristToHigh extends CommandBase
+public class ArmToGroundPickUp extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final RotateArmMotor s_Arm;
     
     
 
-    public WristToHigh(WristMotor subsystem)
+    public ArmToGroundPickUp(RotateArmMotor subsystem)
     {
-        s_Wrist = subsystem;
+        s_Arm = subsystem;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Arm);
     }
 
     @Override
     public void initialize(){}
-
+    
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(135, 1);
+        s_Arm.ToPosition(-15, 0.6);
     }
 
     @Override
     public void end(boolean interrupted)
     {
-        s_Wrist.Stop();
+        s_Arm.Stop();
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(135 + 4) && s_Wrist.WristPosition()>(135 - 4))
+        if(s_Arm.ShoulderPosition()<(-15*2048) + 1000 && s_Arm.ShoulderPosition()>(-15*2048)-1000 )
         {
             return true;
         } else

@@ -29,20 +29,24 @@ public class ArmToHigh extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+
     @Override
     public void execute() 
     {  
-        s_Arm.SetPosition(-92, 0.4);
+        s_Arm.SetPosition(-105, 0.4);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Arm.Stop();
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Arm.ShoulderPosition()<(-92*2048) + 1000 && s_Arm.ShoulderPosition()>(-92*2048)-1000 )
+        if(s_Arm.ShoulderPosition()<(-105*2048) + 1000 && s_Arm.ShoulderPosition()>(-105*2048)-1000 )
         {
             return true;
         } else

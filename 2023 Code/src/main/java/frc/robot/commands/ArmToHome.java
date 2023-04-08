@@ -28,15 +28,14 @@ public class ArmToHome extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
         s_Arm.ToHome();
     }
+
 
     @Override
     public boolean isFinished() 

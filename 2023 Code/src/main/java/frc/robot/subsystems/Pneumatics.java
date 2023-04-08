@@ -8,11 +8,15 @@
 package frc.robot.subsystems;
 
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.RelativeEncoder;
+import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import javax.sql.rowset.WebRowSet;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,25 +27,34 @@ import frc.robot.Robot;
 
 public class Pneumatics extends SubsystemBase 
 {
-  //public final CANSparkMax motor1 = new CANSparkMax(11, MotorType.kBrushless);
-  //public final WPI_TalonFX m_indexend = new WPI_TalonFX(8);
 
-  private final Solenoid gripper = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.Swerve.gripperSolenoidID);
- 
-  public void ActivateGrippers() 
+  /* Solenoids */
+  Solenoid solenoid = Robot.wristSolenoid;
+
+
+  /* Toggles the Pneumatics */
+  public void Shift()
   {
-    gripper.toggle();
-  } 
-
-  public void TurnOn(){
+    solenoid.toggle();
   }
 
-  public void TurnOff(){
+
+  /* Turn On Pneumatics */
+  public void ActivatePneumatics()
+  {
+    solenoid.set(true);
   }
+
+
+  /* Turn Off Pneumatics */
+  public void DeactivatePneumatics()
+  {
+    solenoid.set(false);
+  }
+
 
   public boolean isFinished() 
   {
     return true;
   }
-
 }

@@ -29,14 +29,18 @@ public class WristToLoading extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
         s_Wrist.ToPosition(17, 0.4);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Wrist.Stop();
     }
 
     @Override

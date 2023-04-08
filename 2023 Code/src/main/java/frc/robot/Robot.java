@@ -43,11 +43,9 @@ import frc.robot.subsystems.WristMotor;
  * project.
  */
 public class Robot extends TimedRobot {
-  
+
   public static CTREConfigs ctreConfigs;
-
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
 
 
@@ -71,7 +69,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     
-    //Instantiate the Limelight
+    //Initiate the Limelight (set camera to driver mode)
     Limelight.Instance().InitLimelight();
 
     //Start the camera server on SmartDashboard for viewing
@@ -81,7 +79,7 @@ public class Robot extends TimedRobot {
     s_Arm.ShoulderSoftLimits();
     s_Wrist.SetWristSoftLimits();
 
-    //Instantiate the configs and the RobotContainer
+    //Instantiate configs and RobotContainer
     ctreConfigs = new CTREConfigs();
     m_robotContainer = new RobotContainer();
   }
@@ -139,7 +137,7 @@ public class Robot extends TimedRobot {
   {
     /*
     Instead of putting commands here, they should be ran through RobotContainer, 
-    either as a DefaultCommand or a secondary command in ConfigureButtonBindings().
+    either as a DefaultCommand or as a secondary command in ConfigureButtonBindings().
     */
   }
 

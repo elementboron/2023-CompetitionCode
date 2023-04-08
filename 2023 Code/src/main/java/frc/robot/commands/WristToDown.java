@@ -29,14 +29,18 @@ public class WristToDown extends CommandBase
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
         s_Wrist.ToPosition(73, 1);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Wrist.Stop();
     }
 
     @Override

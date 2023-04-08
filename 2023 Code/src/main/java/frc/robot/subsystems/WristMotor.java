@@ -34,7 +34,6 @@ public class WristMotor extends SubsystemBase
   /* Motors/Encoders */
   CANSparkMax wristMotor = Robot.wristMotor;
   RelativeEncoder encoder = wristMotor.getEncoder();
-  Solenoid solenoid = Robot.wristSolenoid;
   
  
   /* Default Teleop Command (driven directly by joysticks) */
@@ -70,13 +69,6 @@ public class WristMotor extends SubsystemBase
   /* Returns the Current Wrist Position */
   public double WristPosition(){
     return encoder.getPosition();
-  }
-
-
-  /* Toggles Pneumatics */
-  public void Shift()
-  {
-    solenoid.toggle();
   }
 
 

@@ -110,6 +110,12 @@ public class RotateArmMotor extends SubsystemBase
   }
 
 
+  public void TextOutput(String text)
+  {
+    System.out.print(text);
+  }
+
+
   public boolean isFinished() 
   {
     return true;

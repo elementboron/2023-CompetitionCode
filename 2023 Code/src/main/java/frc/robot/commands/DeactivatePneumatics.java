@@ -7,32 +7,32 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.CommonMethodExtensions;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class AutoCenter extends CommandBase
+public class DeactivatePneumatics extends CommandBase
 {
-    private final Swerve s_Swerve;
-
-    public AutoCenter(Swerve subsystem)
+    private final Pneumatics s_Pneumatics;
+    
+    public DeactivatePneumatics(Pneumatics subsystem)
     {
-        s_Swerve = subsystem;
+        s_Pneumatics = subsystem;
         
-        addRequirements(s_Swerve);
+        addRequirements(s_Pneumatics);
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
-        
+        s_Pneumatics.DeactivatePneumatics();
     }
 
     @Override

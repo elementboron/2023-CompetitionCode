@@ -30,6 +30,7 @@ import frc.robot.Robot;
 public class Limelight extends SubsystemBase 
 {
 
+  /* Creates an Instance of the Limelight if One Does Not Exist */
   public static Limelight Instance;
 
   public static Limelight Instance(){
@@ -39,14 +40,17 @@ public class Limelight extends SubsystemBase
     return Instance;
 }
   
+
+  /* Sets the Limelight to DriveCamera Mode (increases exposure) */
   public void InitLimelight()
   {
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setDouble(1);
   }
 
+
+  /* Periodically Posts Limelight Values to SmartDashboard For Viewing */
   public void UpdateSmartDashboardNums()
   {
-    
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");

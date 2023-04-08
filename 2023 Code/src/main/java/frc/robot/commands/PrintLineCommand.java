@@ -15,43 +15,33 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class WristToHigh extends CommandBase
+public class PrintLineCommand extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final RotateArmMotor s_Arm;
+    private final String text;
     
     
 
-    public WristToHigh(WristMotor subsystem)
+    public PrintLineCommand(RotateArmMotor subsystem, String text)
     {
-        s_Wrist = subsystem;
+        this.text = text;
+        s_Arm = subsystem;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Arm);
     }
 
     @Override
     public void initialize(){}
-
+    
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(135, 1);
-    }
-
-    @Override
-    public void end(boolean interrupted)
-    {
-        s_Wrist.Stop();
+        s_Arm.TextOutput(text);
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(135 + 4) && s_Wrist.WristPosition()>(135 - 4))
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        return true;
     }
 }

@@ -17,26 +17,24 @@ import frc.robot.subsystems.*;
 
 public class TogglePneumatics extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final Pneumatics s_Pneumatics;
     
     
 
-    public TogglePneumatics(WristMotor subsystem)
+    public TogglePneumatics(Pneumatics subsystem)
     {
-        s_Wrist = subsystem;
+        s_Pneumatics = subsystem;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Pneumatics);
     }
 
     @Override
-    public void initialize()
-    {
-        
-    }
+    public void initialize(){}
+    
     @Override
     public void execute() 
     {  
-        s_Wrist.Shift();
+        s_Pneumatics.Shift();
     }
 
     @Override

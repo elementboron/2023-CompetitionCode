@@ -15,43 +15,31 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class WristToHigh extends CommandBase
+public class ActivatePneumatics extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final Pneumatics s_Pneumatics;
     
     
 
-    public WristToHigh(WristMotor subsystem)
+    public ActivatePneumatics(Pneumatics subsystem)
     {
-        s_Wrist = subsystem;
+        s_Pneumatics = subsystem;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Pneumatics);
     }
 
     @Override
     public void initialize(){}
-
+    
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(135, 1);
-    }
-
-    @Override
-    public void end(boolean interrupted)
-    {
-        s_Wrist.Stop();
+        s_Pneumatics.ActivatePneumatics();
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(135 + 4) && s_Wrist.WristPosition()>(135 - 4))
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        return true;
     }
 }
