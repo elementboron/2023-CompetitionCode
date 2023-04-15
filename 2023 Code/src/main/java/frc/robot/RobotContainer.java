@@ -54,6 +54,7 @@ public class RobotContainer {
     private final JoystickButton armToHome = new JoystickButton(operator, XboxController.Button.kB.value);
     private final JoystickButton wristToHigh = new JoystickButton(operator, XboxController.Button.kA.value); 
     private final JoystickButton armToLow = new JoystickButton(operator, XboxController.Button.kX.value);
+    private final JoystickButton cancelButton = new JoystickButton(operator, XboxController.Button.kStart.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -134,6 +135,8 @@ public class RobotContainer {
         wristToHome.onTrue(new DeactivatePneumatics(s_Pneumatics).andThen(new WristToHome(s_Wrist)));
         wristToLow.onTrue(new WristToDown(s_Wrist));
         wristToHigh.onTrue(new WristToHigh(s_Wrist));
+        cancelButton.onTrue(new ArmStop(s_Arm));
+        cancelButton.onTrue(new StopWrist(s_Wrist));
     }
 
     /**
