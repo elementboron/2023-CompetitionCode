@@ -7,16 +7,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.autos.RealRightPlaceGrabClimb;
 import frc.robot.autos.TemporaryPlaceAuto;
 import frc.robot.autos.ClimbingTest;
 import frc.robot.autos.ParallelCommandTesting;
+import frc.robot.autos.RealLeftDoublePlace;
 import frc.robot.autos.RealLeftPlaceClimb;
 import frc.robot.autos.RealLeftPlaceGrab;
 import frc.robot.autos.RealPlaceClimbMiddleAuto;
 import frc.robot.autos.RealRightDoublePlace;
-import frc.robot.autos.RealRightPlaceClimb;
 import frc.robot.autos.RealRightPlaceGrab;
+import frc.robot.autos.RealRightDoublePlace;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -44,7 +44,7 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton slowDown = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton armToLow = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton armToMid = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton armToGroundPickup = new JoystickButton(driver, XboxController.Button.kX.value);
 
     /* Operator Buttons */
@@ -53,7 +53,7 @@ public class RobotContainer {
     private final JoystickButton wristToHome = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
     private final JoystickButton armToHome = new JoystickButton(operator, XboxController.Button.kB.value);
     private final JoystickButton wristToHigh = new JoystickButton(operator, XboxController.Button.kA.value); 
-    private final JoystickButton togglePneumatics = new JoystickButton(operator, XboxController.Button.kX.value);
+    private final JoystickButton armToLow = new JoystickButton(operator, XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -128,12 +128,12 @@ public class RobotContainer {
         slowDown.onFalse(new RegularSpeed(s_Swerve));
         armToHome.onTrue(new ArmToHome(s_Arm));
         armToHigh.onTrue(new ArmToHigh(s_Arm));
-        armToLow.onTrue(new ArmToMid(s_Arm));
+        armToMid.onTrue(new ArmToMid(s_Arm));
+        armToLow.onTrue(new ArmToLow(s_Arm));
+        armToGroundPickup.onTrue(new ArmToGroundPickUp(s_Arm).andThen(new WristToGroundPickUp(s_Wrist)).andThen(new ActivatePneumatics(s_Pneumatics)));
         wristToHome.onTrue(new DeactivatePneumatics(s_Pneumatics).andThen(new WristToHome(s_Wrist)));
         wristToLow.onTrue(new WristToDown(s_Wrist));
         wristToHigh.onTrue(new WristToHigh(s_Wrist));
-        togglePneumatics.onTrue(new TogglePneumatics(s_Pneumatics));
-        armToGroundPickup.onTrue(new ArmToGroundPickUp(s_Arm).andThen(new WristToGroundPickUp(s_Wrist)).andThen(new ActivatePneumatics(s_Pneumatics)));
     }
 
     /**
@@ -143,10 +143,11 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
     
-        //final Command auto = new RealLeftPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        final Command auto = new RealRightPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        //final Command auto = new RealRightDoublePlace(s_Swerve, s_Arm, s_Wrist, s_Wheels);
-        //final Command auto = new RealPlaceClimbMiddleAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels);
+        final Command auto = new RealLeftPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        //final Command auto = new RealRightDoublePlace(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        //final Command auto = new RealRightPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        //final Command auto = new RealLeftDoublePlace(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        //final Command auto = new RealPlaceClimbMiddleAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
 
         //final Command auto = new ParallelCommandTesting(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         //final Command auto = new TemporaryPlaceAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels);

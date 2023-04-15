@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.ArmStop;
 import frc.robot.commands.ArmToHigh;
+import frc.robot.commands.ArmToHighAuto;
 import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.DeactivatePneumatics;
 import frc.robot.commands.FollowTrajectory;
 import frc.robot.commands.PrintLineCommand;
 import frc.robot.commands.RotateAuto;
@@ -35,11 +37,13 @@ import frc.robot.commands.StopWrist;
 import frc.robot.commands.WheelsSpitOut;
 import frc.robot.commands.WheelsStop;
 import frc.robot.commands.WheelsSuckIn;
+import frc.robot.commands.WristToCube;
 import frc.robot.commands.WristToDown;
 import frc.robot.commands.WristToHigh;
 import frc.robot.commands.WristToHighAuto;
 import frc.robot.commands.WristToHome;
 import frc.robot.subsystems.GripperWheels;
+import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.RotateArmMotor;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.WristMotor;
@@ -47,18 +51,14 @@ import frc.robot.subsystems.WristMotor;
 public class RealRightDoublePlace extends SequentialCommandGroup {
 
     
-    public RealRightDoublePlace(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels){
+    public RealRightDoublePlace(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels, Pneumatics s_Pneumatics){
+
         TrajectoryConfig config =
             new TrajectoryConfig(
                     (Constants.AutoConstants.kMaxSpeedMetersPerSecond),
                     (Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared))
                 .setKinematics(Constants.Swerve.swerveKinematics);
-        
-        TrajectoryConfig slowConfig =
-            new TrajectoryConfig(
-                    (1.75),
-                    (0.4))
-                .setKinematics(Constants.Swerve.swerveKinematics);
+
 
         var thetaController =
         new ProfiledPIDController(
@@ -70,32 +70,21 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, -0.3)),
+                List.of(new Translation2d(3, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.5, -0.3, new Rotation2d(0)),
+                new Pose2d(4.53, 0.23, new Rotation2d(0)),
                 config);
-        
 
-        Trajectory pickUpCone =
+        Trajectory driveBack =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(0.05, 0)),
+                List.of(new Translation2d(1, 0.15),
+                        new Translation2d(3,0.2)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(0.15, 0, new Rotation2d(0)),
-                slowConfig);
-
-    Trajectory driveBack =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 0.05)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.53, 0.05, new Rotation2d(0)),
+                new Pose2d(4.65, -0.35, new Rotation2d(0)),
                 config);
-
         
         
         SwerveControllerCommand DriveToCone =
@@ -108,19 +97,9 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);
-        SwerveControllerCommand PickUpCone =
-            new SwerveControllerCommand(
-                pickUpCone,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
 
         SwerveControllerCommand DriveBackToPlace =
-               new SwerveControllerCommand(
+            new SwerveControllerCommand(
                 driveBack,
                 s_Swerve::getPose,
                 Constants.Swerve.swerveKinematics,
@@ -128,7 +107,8 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 new PIDController(Constants.AutoConstants.kPYController, 0, 0),
                 thetaController,
                 s_Swerve::setModuleStates,
-                s_Swerve);  
+                s_Swerve);      
+ 
 
         addCommands(
 
@@ -136,63 +116,57 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
             new InstantCommand((() -> s_Swerve.OneEightyGyro())),       
             
             //PLACE INITIAL CONE
-            new ArmToLow(s_Arm),
+            new DeactivatePneumatics(s_Pneumatics),
                 new ParallelCommandGroup(
-                    new ArmToHigh(s_Arm),
+                    new ArmToHighAuto(s_Arm),
                     new WristToHigh(s_Wrist)
                 ),
-            new WheelsSuckIn(s_Wheels),
-            new WaitCommand(0.3),
+            new WaitCommand(0.2),
+            new WheelsSpitOut(s_Wheels),
+            new WaitCommand(0.2),
             new WheelsStop(s_Wheels),
           
-            //RETRACT ARM AND WRIST
+            //RETRACT ARM AND WRIST AND DRIVE TO CONE
             new WristToDown(s_Wrist),
-            new StopWrist(s_Wrist),
-            new ParallelCommandGroup(
-                new ArmToHome(s_Arm),
-                new WristToHome(s_Wrist)
-            ),
-            new ArmStop(s_Arm),
-            new StopWrist(s_Wrist),
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                            new WaitCommand(0.15),
+                            new ArmToHome(s_Arm),
+                            new WaitCommand(0.05),
+                            new ArmToLow(s_Arm)
+                        ),
+                    new WristToHome(s_Wrist),
+                    DriveToCone
+                ),
 
-            //Drive to cone while putting down wrist after 1 second
-            new ParallelCommandGroup(
-                DriveToCone,
-                    new SequentialCommandGroup(
-                        new WaitCommand(1),
-                        new WristToDown(s_Wrist)
-                    )
-            ),
-            
+            new ArmToLow(s_Arm),
+            new StopRobotAutonomous(s_Swerve),
+            new WaitCommand(0.05),   
+
             new WheelsSpitOut(s_Wheels),
-            new StopRobotAutonomous(s_Swerve),
-            new InstantCommand((() -> s_Swerve.resetOdometry(pickUpCone.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.zeroGyro())),
-            new WaitCommand(0.1),
-
-            PickUpCone,
-            new StopRobotAutonomous(s_Swerve),
+            new WristToCube(s_Wrist),
+            new WaitCommand(0.2),
             new WheelsStop(s_Wheels),
+
             new WristToHome(s_Wrist),
 
-            new InstantCommand((() -> s_Swerve.resetOdometry(pickUpCone.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.OneEightyGyro())),
+            new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
+            new InstantCommand((() -> s_Swerve.OneEightyGyro())), 
 
             DriveBackToPlace,
+
             new StopRobotAutonomous(s_Swerve),
-            new WaitCommand(0.1),
 
             //PLACE SECOND PIECE
-            new ArmToLow(s_Arm),
                 new ParallelCommandGroup(
-                    new ArmToHigh(s_Arm),
+                    new ArmToHighAuto(s_Arm),
                     new WristToHigh(s_Wrist)
                 ),
+            new WaitCommand(0.1),
             new WheelsSuckIn(s_Wheels),
-            new WaitCommand(0.3),
-            new WheelsStop(s_Wheels)
-            
-
+            new WaitCommand(1),
+            new WheelsStop(s_Wheels),
+            new WristToHome(s_Wrist)     
         );
 
     }

@@ -13,6 +13,7 @@ import java.util.function.DoubleSupplier;
 import javax.lang.model.util.ElementScanner14;
 import javax.sql.rowset.WebRowSet;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -72,7 +73,7 @@ public class RotateArmMotor extends SubsystemBase
   {
     if(motorRotate.getSelectedSensorPosition()<0)
     {
-      motorRotate.set(0.8);
+      motorRotate.set(0.7);
     } 
   }
 
@@ -81,9 +82,10 @@ public class RotateArmMotor extends SubsystemBase
   public void ShoulderSoftLimits()
   {
     motorRotate.configForwardSoftLimitEnable(true);
-    motorRotate.configForwardSoftLimitThreshold(-6*2048);
+    motorRotate.configForwardSoftLimitThreshold(-3*2048);
     motorRotate.configReverseSoftLimitEnable(true);
-    motorRotate.configReverseSoftLimitThreshold(-110*2048);
+    motorRotate.configReverseSoftLimitThreshold(-54*2048);
+    motorRotate.setNeutralMode(NeutralMode.Brake);
   }
 
 
@@ -91,6 +93,11 @@ public class RotateArmMotor extends SubsystemBase
   public double ShoulderPosition()
   {
     return motorRotate.getSelectedSensorPosition();
+  }
+
+  public void SetSensorPosition(double desiredPosition)
+  {
+    motorRotate.setSelectedSensorPosition(desiredPosition);
   }
 
 

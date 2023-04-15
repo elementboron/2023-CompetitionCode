@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.ArmStop;
 import frc.robot.commands.ArmToHigh;
+import frc.robot.commands.ArmToHighAuto;
 import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.DeactivatePneumatics;
 import frc.robot.commands.FollowTrajectory;
 import frc.robot.commands.ReverseAutoBalance;
 import frc.robot.commands.RotateAuto;
@@ -38,13 +40,14 @@ import frc.robot.commands.WristToDown;
 import frc.robot.commands.WristToHigh;
 import frc.robot.commands.WristToHome;
 import frc.robot.subsystems.GripperWheels;
+import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.RotateArmMotor;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.WristMotor;
 
 public class RealPlaceClimbMiddleAuto extends SequentialCommandGroup {
     
-    public RealPlaceClimbMiddleAuto(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels){
+    public RealPlaceClimbMiddleAuto(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels, Pneumatics s_Pneumatics){
         TrajectoryConfig config =
             new TrajectoryConfig(
                     (Constants.AutoConstants.kMaxSpeedMetersPerSecond/4),
@@ -83,35 +86,33 @@ public class RealPlaceClimbMiddleAuto extends SequentialCommandGroup {
             new InstantCommand((() -> s_Swerve.resetOdometry(ontoDock.getInitialPose()))),
             new InstantCommand((() -> s_Swerve.zeroGyro())),
             
-            //PLACE INITIAL CUBE
-            new ArmToHigh(s_Arm),
-            new ArmStop(s_Arm),
-            new WristToHigh(s_Wrist),
-            new StopWrist(s_Wrist),
-            new WaitCommand(0.2),
-            new WheelsSuckIn(s_Wheels),
+            new DeactivatePneumatics(s_Pneumatics),
+            
+            //PLACE INITIAL CONE
+                new ParallelCommandGroup(
+                    new ArmToHighAuto(s_Arm),
+                    new WristToHigh(s_Wrist)
+                ),
             new WaitCommand(0.3),
+            new WheelsSuckIn(s_Wheels),
+            new WaitCommand(0.4),
             new WheelsStop(s_Wheels),
           
-            //RETRACT ARM AND WRIST
+            //RETRACT ARM AND WRIST AND DRIVE TO CONE
             new WristToDown(s_Wrist),
-            new StopWrist(s_Wrist),
-            new ParallelCommandGroup(
-                new ArmToHome(s_Arm),
-                new WristToHome(s_Wrist)
-            ),
-            new ArmStop(s_Arm),
-            new StopWrist(s_Wrist),
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                            new WaitCommand(0.3),
+                            new ArmToHome(s_Arm)
+                        ),
+                    new WristToHome(s_Wrist)
+                ),
             new InstantCommand((() -> s_Swerve.zeroGyro())),
 
             //DRIVE ONTO DOCK
             DriveOntoDock,
             new AutoBalance(s_Swerve),
             new InstantCommand((() -> s_Swerve.OneEightyGyro()))
-            
-
-
-
 
         );
 

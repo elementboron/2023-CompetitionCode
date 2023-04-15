@@ -34,7 +34,7 @@ public class ArmToMid extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Arm.ToPosition(-20, 0.6);
+        s_Arm.ToPosition(-18, 0.6);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ArmToMid extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        if(s_Arm.ShoulderPosition()<(-20*2048) + 1000 && s_Arm.ShoulderPosition()>(-20*2048)-1000 )
+        if(s_Arm.ShoulderPosition()<(-18*2048) + 1000 && s_Arm.ShoulderPosition()>(-18*2048)-1000 )
         {
             return true;
         } else

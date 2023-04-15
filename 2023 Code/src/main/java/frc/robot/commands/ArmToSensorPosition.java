@@ -15,13 +15,13 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class ArmToGroundPickUp extends CommandBase
+public class ArmToSensorPosition extends CommandBase
 {
     private final RotateArmMotor s_Arm;
     
     
 
-    public ArmToGroundPickUp(RotateArmMotor subsystem)
+    public ArmToSensorPosition(RotateArmMotor subsystem)
     {
         s_Arm = subsystem;
         
@@ -30,11 +30,11 @@ public class ArmToGroundPickUp extends CommandBase
 
     @Override
     public void initialize(){}
-    
+
     @Override
     public void execute() 
     {  
-        s_Arm.ToPosition(-9, 0.6);
+        s_Arm.SetSensorPosition(-10);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ArmToGroundPickUp extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        if(s_Arm.ShoulderPosition()<(-9*2048) + 1000 && s_Arm.ShoulderPosition()>(-9*2048)-1000 )
+        if(s_Arm.ShoulderPosition()<(-10*2048) + 1000 && s_Arm.ShoulderPosition()>(-10*2048)-1000 )
         {
             return true;
         } else

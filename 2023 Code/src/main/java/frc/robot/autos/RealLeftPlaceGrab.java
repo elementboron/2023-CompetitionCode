@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.ArmStop;
 import frc.robot.commands.ArmToHigh;
+import frc.robot.commands.ArmToHighAuto;
 import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.DeactivatePneumatics;
 import frc.robot.commands.FollowTrajectory;
 import frc.robot.commands.RotateAuto;
 import frc.robot.commands.SpecialRotateAuto;
@@ -39,6 +41,7 @@ import frc.robot.commands.WristToHigh;
 import frc.robot.commands.WristToHighAuto;
 import frc.robot.commands.WristToHome;
 import frc.robot.subsystems.GripperWheels;
+import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.RotateArmMotor;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.WristMotor;
@@ -46,7 +49,7 @@ import frc.robot.subsystems.WristMotor;
 public class RealLeftPlaceGrab extends SequentialCommandGroup {
 
     
-    public RealLeftPlaceGrab(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels){
+    public RealLeftPlaceGrab(Swerve s_Swerve, RotateArmMotor s_Arm, WristMotor s_Wrist, GripperWheels s_Wheels, Pneumatics s_Pneumatics){
 
         TrajectoryConfig config =
             new TrajectoryConfig(
@@ -72,7 +75,7 @@ public class RealLeftPlaceGrab extends SequentialCommandGroup {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(3, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.5, -0.4, new Rotation2d(0)),
+                new Pose2d(4.4, -0.4, new Rotation2d(0)),
                 config);
 
         Trajectory pickUpCone =
@@ -83,32 +86,7 @@ public class RealLeftPlaceGrab extends SequentialCommandGroup {
                 List.of(new Translation2d(0.1, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(0.3, 0, new Rotation2d(0)),
-                slowConfig);
-
-        Trajectory alignWithChargingStation =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(0, 0.5)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(0, 2.25, new Rotation2d(0)),
-                slowConfig);
-        
-        Trajectory getOnDock =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(180)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-1, 0)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-2, 0, new Rotation2d(0)),
-                config.setReversed(true));
-        
-        
-        
-
-        
+                slowConfig);   
 
 
         SwerveControllerCommand DriveToCone =
@@ -131,56 +109,36 @@ public class RealLeftPlaceGrab extends SequentialCommandGroup {
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);
-        SwerveControllerCommand AlignWithChargingStation =
-            new SwerveControllerCommand(
-                alignWithChargingStation,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);      
-
-        SwerveControllerCommand ClimbOntoChargingStation =
-               new SwerveControllerCommand(
-                getOnDock,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);  
 
 
         addCommands(
 
-            new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.OneEightyGyro())),       
-            
-            //PLACE INITIAL CONE
-            new ArmToHigh(s_Arm),
-            new ArmStop(s_Arm),
-            new WristToHigh(s_Wrist),
-            new StopWrist(s_Wrist),
-            new WaitCommand(0.5),
-            new WheelsSpitOut(s_Wheels),
-            new WaitCommand(0.3),
-            new WheelsStop(s_Wheels),
-          
-            //RETRACT ARM AND WRIST
-            new WristToDown(s_Wrist),
-            new StopWrist(s_Wrist),
+        new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
+        new InstantCommand((() -> s_Swerve.OneEightyGyro())),       
+        
+        new DeactivatePneumatics(s_Pneumatics),
+        new ParallelCommandGroup(
+            new ArmToHighAuto(s_Arm),
+            new WristToHigh(s_Wrist)
+        ),
+
+        new WaitCommand(0.2),
+        new WheelsSpitOut(s_Wheels),
+        new WaitCommand(0.2),
+        new WheelsStop(s_Wheels),
+      
+        //RETRACT ARM AND WRIST AND DRIVE TO CONE
+        new WristToDown(s_Wrist),
             new ParallelCommandGroup(
-                new ArmToHome(s_Arm),
-                new WristToHome(s_Wrist)
+                    new SequentialCommandGroup(
+                        new WaitCommand(0.15),
+                        new ArmToHome(s_Arm)
+                    ),
+                new WristToHome(s_Wrist),
+                DriveToCone
             ),
-            new ArmStop(s_Arm),
-            new StopWrist(s_Wrist),
 
             
-            DriveToCone,
             new StopRobotAutonomous(s_Swerve),
             new InstantCommand((() -> s_Swerve.resetOdometry(pickUpCone.getInitialPose()))),
             new InstantCommand((() -> s_Swerve.zeroGyro())),     
@@ -192,35 +150,6 @@ public class RealLeftPlaceGrab extends SequentialCommandGroup {
             PickUpCone,
             new StopRobotAutonomous(s_Swerve),
             new WheelsStop(s_Wheels)
-
-
-            /*
-            //DRIVE TO CONE
-            new StopRobotAutonomous(s_Swerve),
-            new WaitCommand(0.2),
-            new ParallelCommandGroup(
-                new WristToDown(s_Wrist),
-                new WheelsSuckIn(s_Wheels)
-            ),
-            new StopWrist(s_Wrist),
-            new WaitCommand(0.7),
-            new WheelsStop(s_Wheels)
-        
-            //ALIGN AND CLIMB ONTO DOCK 
-            new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
-            AlignWithChargingStation,
-            new StopRobotAutonomous(s_Swerve),
-            new WaitCommand(0.1),
-            new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
-            ClimbOntoChargingStation,
-            new AutoBalance(s_Swerve) 
-        */
-            
-            //new StopRobotAutonomous(s_Swerve),
-            //new WaitCommand(0.3),
-            //ClimbOntoChargingStation,
-            //new AutoBalance(s_Swerve)
-            
 
         );
 

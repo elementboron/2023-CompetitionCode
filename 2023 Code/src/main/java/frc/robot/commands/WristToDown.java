@@ -34,7 +34,7 @@ public class WristToDown extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(73, 1);
+        s_Wrist.ToPosition(76, 1);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class WristToDown extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(73 + 2) && s_Wrist.WristPosition()>(73-2))
+        if(s_Wrist.WristPosition()<(76 + 2) && s_Wrist.WristPosition()>(76-2))
         {
             return true;
         } else
