@@ -2,9 +2,12 @@ package frc.robot.autos;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.controllers.PathFollowingController;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -27,7 +30,7 @@ import frc.robot.commands.ArmToHighAuto;
 import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.FollowTrajectory;
+
 import frc.robot.commands.PrintLineCommand;
 import frc.robot.commands.RotateAuto;
 import frc.robot.commands.SpecialRotateAuto;
@@ -136,10 +139,10 @@ public class RealRightPlaceGrab extends SequentialCommandGroup {
                             new WaitCommand(0.3),
                             new ArmToHome(s_Arm)
                         ),
-                    new WristToHome(s_Wrist),
-                    DriveToCone
+                    new WristToHome(s_Wrist)
+                    
                 ),
-                
+                DriveToCone,
                 new StopRobotAutonomous(s_Swerve),
                 new InstantCommand((() -> s_Swerve.resetOdometry(pickUpCone.getInitialPose()))),
                 new InstantCommand((() -> s_Swerve.zeroGyro())),     

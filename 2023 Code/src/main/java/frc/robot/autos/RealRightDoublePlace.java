@@ -2,9 +2,12 @@ package frc.robot.autos;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.controllers.PathFollowingController;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -28,7 +31,6 @@ import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DeactivatePneumatics;
-import frc.robot.commands.FollowTrajectory;
 import frc.robot.commands.PrintLineCommand;
 import frc.robot.commands.RotateAuto;
 import frc.robot.commands.SpecialRotateAuto;
@@ -86,6 +88,16 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 new Pose2d(4.65, -0.35, new Rotation2d(0)),
                 config);
         
+        Trajectory getOut =
+            TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints, making an 's' curve path
+                List.of(new Translation2d(0.5, -2),
+                        new Translation2d(1,-2)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(4.65, -2, new Rotation2d(0)),
+                config);
         
         SwerveControllerCommand DriveToCone =
             new SwerveControllerCommand(
@@ -107,7 +119,18 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 new PIDController(Constants.AutoConstants.kPYController, 0, 0),
                 thetaController,
                 s_Swerve::setModuleStates,
-                s_Swerve);      
+                s_Swerve);    
+                
+        SwerveControllerCommand GetOut =
+            new SwerveControllerCommand(
+                getOut,
+                s_Swerve::getPose,
+                Constants.Swerve.swerveKinematics,
+                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+                thetaController,
+                s_Swerve::setModuleStates,
+                s_Swerve); 
  
 
         addCommands(
@@ -123,7 +146,7 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
                 ),
             new WaitCommand(0.2),
             new WheelsSpitOut(s_Wheels),
-            new WaitCommand(0.2),
+            new WaitCommand(0.3),
             new WheelsStop(s_Wheels),
           
             //RETRACT ARM AND WRIST AND DRIVE TO CONE
@@ -158,6 +181,8 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
             new StopRobotAutonomous(s_Swerve),
 
             //PLACE SECOND PIECE
+            new InstantCommand((() -> s_Swerve.resetOdometry(driveToCone.getInitialPose()))),
+            new InstantCommand((() -> s_Swerve.OneEightyGyro())),
                 new ParallelCommandGroup(
                     new ArmToHighAuto(s_Arm),
                     new WristToHigh(s_Wrist)
@@ -166,7 +191,13 @@ public class RealRightDoublePlace extends SequentialCommandGroup {
             new WheelsSuckIn(s_Wheels),
             new WaitCommand(1),
             new WheelsStop(s_Wheels),
-            new WristToHome(s_Wrist)     
+            new ParallelCommandGroup(
+                new WristToHome(s_Wrist),
+                GetOut
+            )
+            
+            
+            
         );
 
     }

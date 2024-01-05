@@ -2,10 +2,6 @@ package frc.robot.autos;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,15 +19,10 @@ import frc.robot.Constants;
 import frc.robot.commands.ArmStop;
 import frc.robot.commands.ArmToHigh;
 import frc.robot.commands.ArmToHome;
-import frc.robot.commands.AutoBalance;
-import frc.robot.commands.FollowTrajectory;
-import frc.robot.commands.RotateAuto;
-import frc.robot.commands.SpecialRotateAuto;
 import frc.robot.commands.StopRobotAutonomous;
 import frc.robot.commands.StopWrist;
 import frc.robot.commands.WheelsSpitOut;
 import frc.robot.commands.WheelsStop;
-import frc.robot.commands.WheelsSuckIn;
 import frc.robot.commands.WristToDown;
 import frc.robot.commands.WristToHigh;
 import frc.robot.commands.WristToHome;

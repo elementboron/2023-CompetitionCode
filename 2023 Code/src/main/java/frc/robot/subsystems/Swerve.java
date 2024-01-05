@@ -9,8 +9,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -117,28 +123,6 @@ public class Swerve extends SubsystemBase {
     {
         gyro.setYaw(179.9);
     }
-
-    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-        return new SequentialCommandGroup(
-             new InstantCommand(() -> {
-               // Reset odometry for the first path you run during auto
-               if(isFirstPath){
-                   this.resetOdometry(traj.getInitialHolonomicPose());
-               }
-             }),
-             new PPSwerveControllerCommand(
-                 traj, 
-                 this::getPose, // Pose supplier
-                 Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-                 new PIDController(Constants.AutoConstants.kPXController, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                 new PIDController(Constants.AutoConstants.kPYController, 0, 0), // Y controller (usually the same values as X controller)
-                 new PIDController(Constants.AutoConstants.kPThetaController, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                 this::setModuleStates, // Module states consumer
-                 true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-                 this // Requires this drive subsystem
-             )
-         );
-     }
 
     public Rotation2d getYaw() {
         return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw()) : Rotation2d.fromDegrees(gyro.getYaw());

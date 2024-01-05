@@ -1,13 +1,18 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.TemporaryPlaceAuto;
+import frc.robot.autos.AprilAuto;
+import frc.robot.autos.AprilAuto2;
 import frc.robot.autos.ClimbingTest;
 import frc.robot.autos.ParallelCommandTesting;
 import frc.robot.autos.RealLeftDoublePlace;
@@ -46,6 +51,11 @@ public class RobotContainer {
     private final JoystickButton slowDown = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton armToMid = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton armToGroundPickup = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton activatePneumatics = new JoystickButton(operator, XboxController.Button.kBack.value);
+    private final JoystickButton wristToLoading = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton aprilTest = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton aprilTest2 = new JoystickButton(driver, XboxController.Button.kBack.value);
+
 
     /* Operator Buttons */
     private final JoystickButton wristToLow = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
@@ -62,12 +72,15 @@ public class RobotContainer {
     private final WristMotor s_Wrist = new WristMotor();
     private final GripperWheels s_Wheels = new GripperWheels();
     private final Pneumatics s_Pneumatics = new Pneumatics();
+    private final Limelight s_Limelight = new Limelight();
 
 
     /* Driving Speed Control */
     public static final double desiredSpeed = 1;
     public static double speedController = desiredSpeed;
-    public static double turnController = speedController*0.5;
+    public static double turnController = speedController*0.4;
+
+    public static double[] distances;
 
 
 
@@ -137,7 +150,11 @@ public class RobotContainer {
         wristToHigh.onTrue(new WristToHigh(s_Wrist));
         cancelButton.onTrue(new ArmStop(s_Arm));
         cancelButton.onTrue(new StopWrist(s_Wrist));
-    }
+        activatePneumatics.onTrue(new TogglePneumatics(s_Pneumatics));
+        wristToLoading.onTrue(new WristToLoading(s_Wrist).andThen(new ActivatePneumatics(s_Pneumatics)));
+        //aprilTest.onTrue(new InstantCommand((() -> s_Limelight.distanceCalculator(6, -1, s_Limelight.distanceCalculator(6, -1, NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[4])))));
+        aprilTest.onTrue(new AprilExecutor(s_Limelight, s_Swerve, NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[4])));
+    }      
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -146,11 +163,12 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
     
-        final Command auto = new RealLeftPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        //final Command auto = new RealLeftPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
         //final Command auto = new RealRightDoublePlace(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
         //final Command auto = new RealRightPlaceGrab(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
         //final Command auto = new RealLeftDoublePlace(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
         //final Command auto = new RealPlaceClimbMiddleAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels, s_Pneumatics);
+        final Command auto = new AprilAuto(s_Swerve, s_Limelight, s_Limelight.distanceCalculator(6, -1, NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[4])));
 
         //final Command auto = new ParallelCommandTesting(s_Swerve, s_Arm, s_Wrist, s_Wheels);
         //final Command auto = new TemporaryPlaceAuto(s_Swerve, s_Arm, s_Wrist, s_Wheels);
@@ -158,3 +176,4 @@ public class RobotContainer {
         return auto;
     }
 }
+

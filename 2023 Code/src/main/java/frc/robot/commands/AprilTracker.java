@@ -9,23 +9,26 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.CommonMethodExtensions;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class WristToLoading extends CommandBase
+public class AprilTracker extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final Limelight s_Limelight;
+    private final Swerve s_Swerve;
     
     
 
-    public WristToLoading(WristMotor subsystem)
+    public AprilTracker(Limelight subsystem, Swerve subsystem2)
     {
-        s_Wrist = subsystem;
+        s_Limelight = subsystem;
+        s_Swerve = subsystem2;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Limelight, s_Swerve);
     }
 
     @Override
@@ -34,24 +37,16 @@ public class WristToLoading extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(45, 0.8);
-    }
-
-    @Override
-    public void end(boolean interrupted)
-    {
-        s_Wrist.Stop();
+        if(s_Limelight.checkForAprilTags()){
+            s_Swerve.drive(new Translation2d(1,0), 0, true, true);
+        } else {
+            s_Swerve.drive(new Translation2d(0,0), 0, true, true);
+        }
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(45 + 2) && s_Wrist.WristPosition()>(45 - 2))
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        return !s_Limelight.checkForAprilTags();
     }
 }

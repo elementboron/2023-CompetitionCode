@@ -7,25 +7,29 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.CommonMethodExtensions;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
 
-public class WristToLoading extends CommandBase
+public class LimelightCalculator extends CommandBase
 {
-    private final WristMotor s_Wrist;
+    private final Limelight s_Limelight;
+    private double desiredX;
+    private double desiredY;
+    private double[] botpose;
     
     
 
-    public WristToLoading(WristMotor subsystem)
+    public LimelightCalculator(Limelight subsystem, double desiredX, double desiredY, double[] botpose)
     {
-        s_Wrist = subsystem;
+        s_Limelight = subsystem;
+        this.desiredX = desiredX;
+        this.desiredY = desiredY;
+        this.botpose = botpose;
         
-        addRequirements(s_Wrist);
+        addRequirements(s_Limelight);
     }
 
     @Override
@@ -34,24 +38,18 @@ public class WristToLoading extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Wrist.ToPosition(45, 0.8);
+        double[] calculatedDistance = s_Limelight.distanceCalculator(desiredX, desiredY, botpose);
+        RobotContainer.distances = calculatedDistance;
     }
 
     @Override
     public void end(boolean interrupted)
     {
-        s_Wrist.Stop();
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(s_Wrist.WristPosition()<(45 + 2) && s_Wrist.WristPosition()>(45 - 2))
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
+        return true;
     }
 }

@@ -8,30 +8,30 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.CommonMethodExtensions;
 import frc.robot.RobotContainer;
+import frc.robot.autos.AprilAuto2;
 import frc.robot.subsystems.*;
 
 
-public class FollowTrajectory extends CommandBase
+public class AprilExecutor extends CommandBase
 {
+    private final Limelight s_Limelight;
     private final Swerve s_Swerve;
-    private final PathPlannerTrajectory traj;
-    private final boolean isFirstTime;
+    double [] botpose;
     
     
 
-    public FollowTrajectory(Swerve subsystem, PathPlannerTrajectory traj, boolean isFirstTime)
+    public AprilExecutor(Limelight subsystem, Swerve subsystem2, double[] botpose)
     {
-        s_Swerve = subsystem;
-        this.traj = traj;
-        this.isFirstTime = isFirstTime;
+        s_Limelight = subsystem;
+        s_Swerve = subsystem2;
+        this.botpose = botpose;
         
-        addRequirements(s_Swerve);
+        addRequirements(s_Limelight, s_Swerve);
     }
 
     @Override
@@ -40,12 +40,13 @@ public class FollowTrajectory extends CommandBase
     @Override
     public void execute() 
     {  
-        s_Swerve.followTrajectoryCommand(traj, isFirstTime);
+        new AprilAuto2(s_Swerve, s_Limelight, s_Limelight.distanceCalculator(6, -1, botpose));
+
     }
 
     @Override
     public boolean isFinished() 
     {
-        return false;
+        return true;
     }
 }

@@ -2,10 +2,6 @@ package frc.robot.autos;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,31 +12,21 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.commands.ArmStop;
-import frc.robot.commands.ArmToHigh;
 import frc.robot.commands.ArmToHighAuto;
 import frc.robot.commands.ArmToHome;
 import frc.robot.commands.ArmToLow;
-import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DeactivatePneumatics;
-import frc.robot.commands.FollowTrajectory;
-import frc.robot.commands.PrintLineCommand;
-import frc.robot.commands.RotateAuto;
-import frc.robot.commands.SpecialRotateAuto;
 import frc.robot.commands.StopRobotAutonomous;
-import frc.robot.commands.StopWrist;
 import frc.robot.commands.WheelsSpitOut;
 import frc.robot.commands.WheelsStop;
 import frc.robot.commands.WheelsSuckIn;
 import frc.robot.commands.WristToCube;
 import frc.robot.commands.WristToDown;
 import frc.robot.commands.WristToHigh;
-import frc.robot.commands.WristToHighAuto;
 import frc.robot.commands.WristToHome;
 import frc.robot.subsystems.GripperWheels;
 import frc.robot.subsystems.Pneumatics;
@@ -72,7 +58,7 @@ public class RealLeftDoublePlace extends SequentialCommandGroup {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(3, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.53, -0.4, new Rotation2d(0)),
+                new Pose2d(4.53, -0.35, new Rotation2d(0)),
                 config);
 
         Trajectory driveBack =
@@ -83,7 +69,7 @@ public class RealLeftDoublePlace extends SequentialCommandGroup {
                 List.of(new Translation2d(1, -0.1),
                         new Translation2d(3,-0.1)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.6, 0.2, new Rotation2d(0)),
+                new Pose2d(4.7, 0.2, new Rotation2d(0)),
                 config);
         
         
@@ -163,6 +149,7 @@ public class RealLeftDoublePlace extends SequentialCommandGroup {
                     new ArmToHighAuto(s_Arm),
                     new WristToHigh(s_Wrist)
                 ),
+            new InstantCommand((() -> s_Swerve.OneEightyGyro())), 
             new WaitCommand(0.1),
             new WheelsSuckIn(s_Wheels),
             new WaitCommand(1),
